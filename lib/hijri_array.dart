@@ -1218,10 +1218,9 @@ const List<int> ummAlquraDateArray = [
   59791,
   59820,
   59850,
-  59879,
-  59891, // added to fix rebuelevvel 1444 miscalculation
+  59880, //59879, // added to fix rebuelevvel 1444 miscalculation - 20221027
   59909,
-  59939,
+  59938, //59939, // 20221224
   59968,
   59997,
   60027,
