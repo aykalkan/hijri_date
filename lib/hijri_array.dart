@@ -1,3 +1,7 @@
+import 'package:hijri/hijri_date.dart';
+
+Map<DateTime, HijriDate> hijriDatesCache = {};
+
 const Map<int, String> monthNames = {
   1: 'Muharram',
   2: 'Safar',

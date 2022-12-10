@@ -16,8 +16,6 @@ class HijriCalendar {
   late String dayWeName;
   Map<int, int>? adjustments;
 
-  Map<DateTime, HijriDate> hijriDatesCache = {};
-
   static Map<String, Map<String, Map<int, String>>> _local = {
     'en': {
       'long': monthNames,
@@ -212,6 +210,9 @@ class HijriCalendar {
   }
 
   HijriDate fillCache(DateTime date) {
+    print("!!! DATE IS ABSENT !!!");
+    print("Date : ${date}");
+
     String dateString = (date.year.toString() +
         date.month.toString().padLeft(2, '0') +
         date.day.toString().padLeft(2, '0'));
@@ -241,6 +242,9 @@ class HijriCalendar {
       hijriDatesCache[calculatedDate] = HijriDate.fromMonthStart(calculatedDate,
           monthStartDate, monthStartHijri.year, monthStartHijri.month);
     }
+    print("After");
+    printCacheMap();
+
     return hijriDatesCache[date]!;
   }
 
@@ -440,5 +444,13 @@ class HijriCalendar {
       d = d < 7 ? d + 1 : 1;
     }
     return calender;
+  }
+
+  void printCacheMap() {
+    print("-------------hijriDatesCache----------------");
+    hijriDatesCache.forEach((key, value) {
+      print("${key} -> ${value.year}-${value.month}-${value.day}");
+    });
+    print("++++++++++++++++hijriDatesCache++++++++++++++++");
   }
 }
