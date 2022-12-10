@@ -204,6 +204,8 @@ class HijriCalendar {
     HijriDate hijriDateObject =
         hijriDatesCache.putIfAbsent(date, () => fillCache(date));
 
+    wkDay = date.weekday;
+
     return hDate(
         hijriDateObject.year, hijriDateObject.month, hijriDateObject.day);
   }

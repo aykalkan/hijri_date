@@ -50,6 +50,7 @@ void main() {
   print(_today.isBefore(1440, 11, 12)); // true
   print(_today.isAtSameMomentAs(1440, 11, 12)); // false
 
+  /*
   //Adjustment
   var defCal = HijriCalendar.fromDate(DateTime(2020, 8, 20));
   print("default ${defCal.fullDate()}");
@@ -59,4 +60,5 @@ void main() {
   adjCal.setAdjustments(adj);
   adjCal.gregorianToHijri(2020, 8, 20);
   print("adjusted ${adjCal.fullDate()}");
+  */
 }

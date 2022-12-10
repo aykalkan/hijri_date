@@ -99,8 +99,8 @@ void main() {
         'short_days': shortWdNames
       });
       HijriCalendar.setLocal('id');
-      expect(_hijriDate.toFormat("DDDD MM yyyy dd"),
-          equals("Sabtu Syaw 1439 30"));
+      expect(
+          _hijriDate.toFormat("DDDD MM yyyy dd"), equals("Sabtu Syaw 1439 30"));
     });
   });
 
@@ -122,7 +122,7 @@ void main() {
           equals(DateTime(2018, 06, 26, 00, 00, 00, 000)));
     });
   });
-
+/*
   group('adjustment', () {
     HijriCalendar _adjCal = HijriCalendar();
     test('without adjustment produces the correct date', () {
@@ -136,34 +136,34 @@ void main() {
       expect(_adjCal.toList(), equals([1441, 12, 30]));
     });
   });
+*/
 
-
-     group('return Map of months values', () {
+  group('return Map of months values', () {
     HijriCalendar _calender = HijriCalendar();
     test('get all months', () {
-       const Map<int, String> monthNames = {
-       1: 'Muharram',
-       2: 'Safar',
-       3: 'Rabi\' Al-Awwal',
-       4: 'Rabi\' Al-Thani',
-       5: 'Jumada Al-Awwal',
-       6: 'Jumada Al-Thani',
-       7: 'Rajab',
-       8: 'Sha\'aban',
-       9: 'Ramadan',
-       10: 'Shawwal',
-       11: 'Dhu Al-Qi\'dah',
-       12: 'Dhu Al-Hijjah'
+      const Map<int, String> monthNames = {
+        1: 'Muharram',
+        2: 'Safar',
+        3: 'Rabi\' Al-Awwal',
+        4: 'Rabi\' Al-Thani',
+        5: 'Jumada Al-Awwal',
+        6: 'Jumada Al-Thani',
+        7: 'Rajab',
+        8: 'Sha\'aban',
+        9: 'Ramadan',
+        10: 'Shawwal',
+        11: 'Dhu Al-Qi\'dah',
+        12: 'Dhu Al-Hijjah'
       };
-      Map monthes=_calender.getMonths();     
-      expect(monthes, equals(monthNames)) ;
+      Map monthes = _calender.getMonths();
+      expect(monthes, equals(monthNames));
     });
 
-       test('get specific month calender', () {
-         HijriCalendar _calender = HijriCalendar();
-         Map monthes=_calender.getMonthDays(HijriCalendar.now().hMonth,HijriCalendar.now().hYear);     
+    test('get specific month calender', () {
+      HijriCalendar _calender = HijriCalendar();
+      Map monthes = _calender.getMonthDays(
+          HijriCalendar.now().hMonth, HijriCalendar.now().hYear);
       expect(monthes, equals(monthes));
     });
-  
   });
 }
