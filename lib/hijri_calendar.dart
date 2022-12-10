@@ -201,8 +201,9 @@ class HijriCalendar {
 */
 
   String gregorianToHijri(DateTime date) {
+    DateTime truncDate = DateTime(date.year, date.month, date.day);
     HijriDate hijriDateObject =
-        hijriDatesCache.putIfAbsent(date, () => fillCache(date));
+        hijriDatesCache.putIfAbsent(truncDate, () => fillCache(truncDate));
 
     wkDay = date.weekday;
 
