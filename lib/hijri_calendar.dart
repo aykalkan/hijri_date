@@ -1,7 +1,7 @@
 library hijri;
 
 import 'digits_converter.dart';
-
+import 'hijri_date.dart';
 import 'hijri_array.dart';
 
 class HijriCalendar {
@@ -15,6 +15,8 @@ class HijriCalendar {
   late String shortMonthName;
   late String dayWeName;
   Map<int, int>? adjustments;
+
+  Map<DateTime, HijriDate> hijriDatesCache = {};
 
   static Map<String, Map<String, Map<int, String>>> _local = {
     'en': {
@@ -46,7 +48,7 @@ class HijriCalendar {
   HijriCalendar();
 
   HijriCalendar.fromDate(DateTime date) {
-    gregorianToHijri(date.year, date.month, date.day);
+    gregorianToHijri(date);
   }
 
   HijriCalendar.now() {
@@ -64,8 +66,7 @@ class HijriCalendar {
   }
 
   String _now() {
-    DateTime today = DateTime.now();
-    return gregorianToHijri(today.year, today.month, today.day);
+    return gregorianToHijri(DateTime.now());
   }
 
   int getDaysInMonth(int year, int month) {
@@ -123,6 +124,7 @@ class HijriCalendar {
     return DateTime(year, (month), day);
   }
 
+/*
   String gregorianToHijri(int pYear, int pMonth, int pDay) {
     //This code the modified version of R.H. van Gent Code, it can be found at http://www.staff.science.uu.nl/~gent0113/islam/ummalqura.htm
     // read calendar data
@@ -195,6 +197,66 @@ class HijriCalendar {
 
     wkDay = wd == 0 ? 7 : wd;
     return hDate(iy, im, id);
+  }
+*/
+
+  String gregorianToHijri(DateTime date) {
+    HijriDate hijriDateObject =
+        hijriDatesCache.putIfAbsent(date, () => fillCache(date));
+
+    return hDate(
+        hijriDateObject.year, hijriDateObject.month, hijriDateObject.day);
+  }
+
+  HijriDate fillCache(DateTime date) {
+    String dateString = (date.year.toString() +
+        date.month.toString().padLeft(2, '0') +
+        date.day.toString().padLeft(2, '0'));
+    int dateInt = int.parse(dateString);
+
+    int i = 0;
+
+    for (; i < dateMap.length; i++) {
+      if (dateMap.keys.elementAt(i) > dateInt) {
+        break;
+      }
+    }
+
+    Map<int, int> foundMonthStartInts = Map.fromEntries(
+        [dateMap.entries.elementAt(i - 1), dateMap.entries.elementAt(i)]);
+
+    Map<DateTime, HijriDate> monthStartsMap = foundMonthStartInts.map(
+        (key, value) =>
+            MapEntry(parseDateFromInt(key), parseHijriFromInt(value)));
+
+    DateTime monthStartDate = monthStartsMap.keys.first;
+    HijriDate monthStartHijri = monthStartsMap.values.first;
+
+    for (DateTime calculatedDate = monthStartDate;
+        calculatedDate.isBefore(monthStartsMap.keys.last);
+        calculatedDate = calculatedDate.add(Duration(days: 1))) {
+      hijriDatesCache[calculatedDate] = HijriDate.fromMonthStart(calculatedDate,
+          monthStartDate, monthStartHijri.year, monthStartHijri.month);
+    }
+    return hijriDatesCache[date]!;
+  }
+
+  DateTime parseDateFromInt(int dateInt) {
+    String dateString = dateInt.toString().padLeft(8, '0');
+    return DateTime(
+      int.parse(dateString.substring(0, 4)),
+      int.parse(dateString.substring(4, 6)),
+      int.parse(dateString.substring(6, 8)),
+    );
+  }
+
+  HijriDate parseHijriFromInt(int hijriInt) {
+    String hijriYearMonthString = hijriInt.toString().padLeft(6, '0');
+
+    int hijriMonth = int.parse(hijriYearMonthString.substring(4, 6));
+    int hijriYear = int.parse(hijriYearMonthString.substring(0, 4));
+
+    return HijriDate(hijriYear, hijriMonth, 1);
   }
 
   String hDate(int year, int month, int day) {
