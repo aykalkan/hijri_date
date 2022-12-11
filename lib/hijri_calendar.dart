@@ -210,8 +210,16 @@ class HijriCalendar {
   }
 
   HijriDate fillCache(DateTime date) {
-    //print("!!! DATE IS ABSENT !!!");
-    //print("Date : ${date}");
+    print("!!! DATE IS ABSENT !!!");
+    print("Date : ${date}");
+
+    if (hijriDatesCache.length > 180) {
+      for (int i = 0; i < hijriDatesCache.length - 180; i++) {
+        print(
+            "Removing ${hijriDatesCache.keys.elementAt(i)} -> ${hijriDatesCache.values.elementAt(i)}");
+        hijriDatesCache.remove(hijriDatesCache.keys.elementAt(i));
+      }
+    }
 
     String dateString = (date.year.toString() +
         date.month.toString().padLeft(2, '0') +
@@ -242,8 +250,8 @@ class HijriCalendar {
       hijriDatesCache[calculatedDate] = HijriDate.fromMonthStart(calculatedDate,
           monthStartDate, monthStartHijri.year, monthStartHijri.month);
     }
-    //print("After");
-    //printCacheMap();
+    print("After");
+    printCacheMap();
 
     return hijriDatesCache[date]!;
   }
