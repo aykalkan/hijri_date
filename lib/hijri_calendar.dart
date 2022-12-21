@@ -122,86 +122,12 @@ class HijriCalendar {
     return DateTime(year, (month), day);
   }
 
-/*
-  String gregorianToHijri(int pYear, int pMonth, int pDay) {
-    //This code the modified version of R.H. van Gent Code, it can be found at http://www.staff.science.uu.nl/~gent0113/islam/ummalqura.htm
-    // read calendar data
-
-    int day = (pDay);
-    int month =
-        (pMonth); // -1; // Here we enter the Index of the month (which starts with Zero)
-    int year = (pYear);
-
-    int m = month;
-    int y = year;
-
-    // append January and February to the previous year (i.e. regard March as
-    // the first month of the year in order to simplify leapday corrections)
-
-    if (m < 3) {
-      y -= 1;
-      m += 12;
-    }
-
-    // determine offset between Julian and Gregorian calendar
-
-    int a = (y / 100).floor();
-    int jgc = a - (a / 4.0).floor() - 2;
-
-    // compute Chronological Julian Day Number (CJDN)
-
-    int cjdn = (365.25 * (y + 4716)).floor() +
-        (30.6001 * (m + 1)).floor() +
-        day -
-        jgc -
-        1524;
-
-    a = ((cjdn - 1867216.25) / 36524.25).floor();
-    jgc = a - (a / 4.0).floor() + 1;
-    int b = cjdn + jgc + 1524;
-    int c = ((b - 122.1) / 365.25).floor();
-    int d = (365.25 * c).floor();
-    month = ((b - d) / 30.6001).floor();
-    day = (b - d) - (30.6001 * month).floor();
-
-    if (month > 13) {
-      c += 1;
-      month -= 12;
-    }
-
-    month -= 1;
-    year = c - 4716;
-
-    // compute Modified Chronological Julian Day Number (MCJDN)
-
-    int mcjdn = cjdn - 2400000;
-
-    // the MCJDN's of the start of the lunations in the Umm al-Qura calendar are stored in 'islamcalendar_dat.js'
-    int i;
-    for (i = 0; i < ummAlquraDateArray.length; i++) {
-      if (_ummalquraDataIndex(i)! > mcjdn) break;
-    }
-
-    // compute and output the Umm al-Qura calendar date
-
-    int iln = i + 16260;
-    int ii = ((iln - 1) / 12).floor();
-    int iy = ii + 1;
-    int im = iln - 12 * ii;
-    int id = mcjdn - _ummalquraDataIndex(i - 1)! + 1;
-    int ml = _ummalquraDataIndex(i)! - _ummalquraDataIndex(i - 1)!;
-    lengthOfMonth = ml;
-    int wd = _gMod(cjdn + 1, 7);
-
-    wkDay = wd == 0 ? 7 : wd;
-    return hDate(iy, im, id);
-  }
-*/
-
   String gregorianToHijri(DateTime date) {
     DateTime truncDate = DateTime(date.year, date.month, date.day);
-    HijriDate hijriDateObject =
-        hijriDatesCache.putIfAbsent(truncDate, () => fillCache(truncDate));
+
+    if (!hijriDatesCache.containsKey(truncDate)) fillCache(truncDate);
+    // HijriDate hijriDateObject = hijriDatesCache.putIfAbsent(truncDate, () => fillCache(truncDate));
+    HijriDate hijriDateObject = hijriDatesCache[truncDate]!;
 
     wkDay = date.weekday;
 
@@ -210,13 +136,14 @@ class HijriCalendar {
   }
 
   HijriDate fillCache(DateTime date) {
+    date = date;
+
     print("!!! DATE IS ABSENT !!!");
     print("Date : ${date}");
 
     if (hijriDatesCache.length > 180) {
       for (int i = 0; i < hijriDatesCache.length - 180; i++) {
-        print(
-            "Removing ${hijriDatesCache.keys.elementAt(i)} -> ${hijriDatesCache.values.elementAt(i)}");
+        // print( "Removing ${hijriDatesCache.keys.elementAt(i)} -> ${hijriDatesCache.values.elementAt(i)}");
         hijriDatesCache.remove(hijriDatesCache.keys.elementAt(i));
       }
     }
@@ -246,12 +173,13 @@ class HijriCalendar {
 
     for (DateTime calculatedDate = monthStartDate;
         calculatedDate.isBefore(monthStartsMap.keys.last);
-        calculatedDate = calculatedDate.add(Duration(days: 1))) {
+        calculatedDate = DateTime(calculatedDate.year, calculatedDate.month,
+            calculatedDate.day + 1)) {
       hijriDatesCache[calculatedDate] = HijriDate.fromMonthStart(calculatedDate,
           monthStartDate, monthStartHijri.year, monthStartHijri.month);
     }
-    print("After");
-    printCacheMap();
+
+    // printCacheMap();
 
     return hijriDatesCache[date]!;
   }
