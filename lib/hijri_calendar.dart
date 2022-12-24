@@ -138,12 +138,13 @@ class HijriCalendar {
   HijriDate fillCache(DateTime date) {
     date = date;
 
-    print("!!! DATE IS ABSENT !!!");
-    print("Date : ${date}");
+    //print("!!! DATE IS ABSENT !!!");
+    //print("Date : ${date}");
 
     if (hijriDatesCache.length > 180) {
       for (int i = 0; i < hijriDatesCache.length - 180; i++) {
-        // print( "Removing ${hijriDatesCache.keys.elementAt(i)} -> ${hijriDatesCache.values.elementAt(i)}");
+        //print(
+        //    "Removing ${hijriDatesCache.keys.elementAt(i)} -> ${hijriDatesCache.values.elementAt(i)}");
         hijriDatesCache.remove(hijriDatesCache.keys.elementAt(i));
       }
     }
@@ -153,33 +154,27 @@ class HijriCalendar {
         date.day.toString().padLeft(2, '0'));
     int dateInt = int.parse(dateString);
 
-    int i = 0;
+    int i = dateMap.length - 1;
 
-    for (; i < dateMap.length; i++) {
-      if (dateMap.keys.elementAt(i) > dateInt) {
+    for (; i >= 0; i--) {
+      if (dateMap.keys.elementAt(i) <= dateInt) {
         break;
       }
     }
 
-    Map<int, int> foundMonthStartInts = Map.fromEntries(
-        [dateMap.entries.elementAt(i - 1), dateMap.entries.elementAt(i)]);
-
-    Map<DateTime, HijriDate> monthStartsMap = foundMonthStartInts.map(
-        (key, value) =>
-            MapEntry(parseDateFromInt(key), parseHijriFromInt(value)));
-
-    DateTime monthStartDate = monthStartsMap.keys.first;
-    HijriDate monthStartHijri = monthStartsMap.values.first;
+    DateTime monthStartDate = parseDateFromInt(dateMap.keys.elementAt(i));
+    DateTime monthEndDate = parseDateFromInt(dateMap.keys.elementAt(i + 1));
+    HijriDate monthStartHijri = parseHijriFromInt(dateMap.values.elementAt(i));
 
     for (DateTime calculatedDate = monthStartDate;
-        calculatedDate.isBefore(monthStartsMap.keys.last);
+        calculatedDate.isBefore(monthEndDate);
         calculatedDate = DateTime(calculatedDate.year, calculatedDate.month,
             calculatedDate.day + 1)) {
       hijriDatesCache[calculatedDate] = HijriDate.fromMonthStart(calculatedDate,
           monthStartDate, monthStartHijri.year, monthStartHijri.month);
     }
 
-    // printCacheMap();
+    //printCacheMap();
 
     return hijriDatesCache[date]!;
   }
