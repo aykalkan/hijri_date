@@ -1,5 +1,7 @@
 library hijri;
 
+import 'dart:io';
+
 import 'digits_converter.dart';
 import 'hijri_date.dart';
 import 'hijri_array.dart';
@@ -124,22 +126,28 @@ class HijriCalendar {
 
   String gregorianToHijri(DateTime date) {
     DateTime truncDate = DateTime(date.year, date.month, date.day);
+    wkDay = truncDate.weekday;
 
-    if (!hijriDatesCache.containsKey(truncDate)) fillCache(truncDate);
-    // HijriDate hijriDateObject = hijriDatesCache.putIfAbsent(truncDate, () => fillCache(truncDate));
-    HijriDate hijriDateObject = hijriDatesCache[truncDate]!;
-
-    wkDay = date.weekday;
+    HijriDate hijriDateObject =
+        hijriDatesCache.putIfAbsent(truncDate, () => fillCache(truncDate));
 
     return hDate(
         hijriDateObject.year, hijriDateObject.month, hijriDateObject.day);
   }
 
   HijriDate fillCache(DateTime date) {
-    date = date;
-
     //print("!!! DATE IS ABSENT !!!");
     //print("Date : ${date}");
+
+    DateTime minDate = parseDateFromInt(dateMap.keys.first);
+    DateTime maxDate = parseDateFromInt(dateMap.keys.last);
+    maxDate = DateTime(maxDate.year, maxDate.month, maxDate.day + 30);
+    if (date.isBefore(minDate) ||
+        date.isAfter(maxDate) ||
+        date.isAtSameMomentAs(maxDate)) {
+      throw new Exception(
+          "Selected date should between $minDate and $maxDate.");
+    }
 
     if (hijriDatesCache.length > 180) {
       for (int i = 0; i < hijriDatesCache.length - 180; i++) {
@@ -163,7 +171,12 @@ class HijriCalendar {
     }
 
     DateTime monthStartDate = parseDateFromInt(dateMap.keys.elementAt(i));
-    DateTime monthEndDate = parseDateFromInt(dateMap.keys.elementAt(i + 1));
+    DateTime monthEndDate;
+    try {
+      monthEndDate = parseDateFromInt(dateMap.keys.elementAt(i + 1));
+    } catch (e) {
+      monthEndDate = DateTime(maxDate.year, maxDate.month, maxDate.day);
+    }
     HijriDate monthStartHijri = parseHijriFromInt(dateMap.values.elementAt(i));
 
     for (DateTime calculatedDate = monthStartDate;
