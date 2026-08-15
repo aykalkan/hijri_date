@@ -1,10 +1,10 @@
-import 'package:hijri/hijri_calendar.dart';
+import 'hijri_calendar.dart';
 
 void main(List<String> args) {
   DateTime start = DateTime.now();
   print('Compile finished : ' + start.toString());
-  for (int i = 0; i < 180; i++) {
-    var date = DateTime(2027, 12, 20).add(Duration(days: i));
+  for (int i = 0; i < 90; i++) {
+    var date = DateTime(2024, 01, 20).add(Duration(days: i));
     var converted = HijriCalendar.fromDate(date);
 
     print(date.toString());
