@@ -120,17 +120,17 @@ void main() {
       'ur': 'رمضان',
       'ms': 'Ramadan',
       'id': 'Ramadan',
-      'fr': 'Ramadan',
+      'fr': 'ramadan',
       'de': 'Ramadan',
-      'es': 'Ramadan',
+      'es': 'ramadan',
     };
     final Map<String, String> expectedShortDay = {
       'ur': 'اتوار',
       'ms': 'Aha',
       'id': 'Min',
-      'fr': 'Dim',
+      'fr': 'dim',
       'de': 'So',
-      'es': 'Dom',
+      'es': 'dom',
     };
 
     expectedLongMonth.forEach((locale, month) {

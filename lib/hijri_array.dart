@@ -315,53 +315,53 @@ const Map<int, String> idShortWdNames = {
 };
 
 const Map<int, String> frMonthNames = {
-  1: 'Mouharram',
-  2: 'Safar',
-  3: 'Rabi al-awwal',
-  4: 'Rabi al-thani',
-  5: 'Joumada al-oula',
-  6: 'Joumada al-thania',
-  7: 'Rajab',
-  8: 'Chaabane',
-  9: 'Ramadan',
-  10: 'Chawwal',
-  11: 'Dhou al-qi\'da',
-  12: 'Dhou al-hijja'
+  1: 'mouharram',
+  2: 'safar',
+  3: 'rabi al-awwal',
+  4: 'rabi al-thani',
+  5: 'joumada al-oula',
+  6: 'joumada al-thania',
+  7: 'rajab',
+  8: 'chaabane',
+  9: 'ramadan',
+  10: 'chawwal',
+  11: 'dhou al-qi\'da',
+  12: 'dhou al-hijja'
 };
 
 const Map<int, String> frMonthShortNames = {
-  1: 'Mouh',
-  2: 'Saf',
-  3: 'Rab1',
-  4: 'Rab2',
-  5: 'Jou1',
-  6: 'Jou2',
-  7: 'Raj',
-  8: 'Cha',
-  9: 'Ram',
-  10: 'Chaw',
-  11: 'DhouQ',
-  12: 'DhouH'
+  1: 'mouh',
+  2: 'saf',
+  3: 'rab1',
+  4: 'rab2',
+  5: 'jou1',
+  6: 'jou2',
+  7: 'raj',
+  8: 'cha',
+  9: 'ram',
+  10: 'chaw',
+  11: 'dhouq',
+  12: 'dhouh'
 };
 
 const Map<int, String> frWdNames = {
-  7: "Dimanche",
-  1: "Lundi",
-  2: "Mardi",
-  3: "Mercredi",
-  4: "Jeudi",
-  5: "Vendredi",
-  6: "Samedi"
+  7: "dimanche",
+  1: "lundi",
+  2: "mardi",
+  3: "mercredi",
+  4: "jeudi",
+  5: "vendredi",
+  6: "samedi"
 };
 
 const Map<int, String> frShortWdNames = {
-  7: "Dim",
-  1: "Lun",
-  2: "Mar",
-  3: "Mer",
-  4: "Jeu",
-  5: "Ven",
-  6: "Sam"
+  7: "dim",
+  1: "lun",
+  2: "mar",
+  3: "mer",
+  4: "jeu",
+  5: "ven",
+  6: "sam"
 };
 
 const Map<int, String> deMonthNames = {
@@ -415,53 +415,53 @@ const Map<int, String> deShortWdNames = {
 };
 
 const Map<int, String> esMonthNames = {
-  1: 'Muharram',
-  2: 'Safar',
-  3: 'Rabi al-awwal',
-  4: 'Rabi al-thani',
-  5: 'Jumada al-ula',
-  6: 'Jumada al-thani',
-  7: 'Rajab',
-  8: 'Sha\'ban',
-  9: 'Ramadan',
-  10: 'Shawwal',
-  11: 'Dhu al-qa\'da',
-  12: 'Dhu al-hijja'
+  1: 'muharram',
+  2: 'safar',
+  3: 'rabi al-awwal',
+  4: 'rabi al-thani',
+  5: 'jumada al-ula',
+  6: 'jumada al-thani',
+  7: 'rajab',
+  8: 'sha\'ban',
+  9: 'ramadan',
+  10: 'shawwal',
+  11: 'dhu al-qa\'da',
+  12: 'dhu al-hijja'
 };
 
 const Map<int, String> esMonthShortNames = {
-  1: 'Muh',
-  2: 'Saf',
-  3: 'Rab1',
-  4: 'Rab2',
-  5: 'Jum1',
-  6: 'Jum2',
-  7: 'Raj',
-  8: 'Sha',
-  9: 'Ram',
-  10: 'Shaw',
-  11: 'DhuQ',
-  12: 'DhuH'
+  1: 'muh',
+  2: 'saf',
+  3: 'rab1',
+  4: 'rab2',
+  5: 'jum1',
+  6: 'jum2',
+  7: 'raj',
+  8: 'sha',
+  9: 'ram',
+  10: 'shaw',
+  11: 'dhuq',
+  12: 'dhuh'
 };
 
 const Map<int, String> esWdNames = {
-  7: "Domingo",
-  1: "Lunes",
-  2: "Martes",
-  3: "Miércoles",
-  4: "Jueves",
-  5: "Viernes",
-  6: "Sábado"
+  7: "domingo",
+  1: "lunes",
+  2: "martes",
+  3: "miércoles",
+  4: "jueves",
+  5: "viernes",
+  6: "sábado"
 };
 
 const Map<int, String> esShortWdNames = {
-  7: "Dom",
-  1: "Lun",
-  2: "Mar",
-  3: "Mié",
-  4: "Jue",
-  5: "Vie",
-  6: "Sáb"
+  7: "dom",
+  1: "lun",
+  2: "mar",
+  3: "mié",
+  4: "jue",
+  5: "vie",
+  6: "sáb"
 };
 
 const List<int> ummAlquraDateArray = [
