@@ -374,8 +374,11 @@ class HijriCalendar {
   List<int?> toList() => [hYear, hMonth, hDay];
 
   String fullDate() {
-    String dateFormat =
-        (language == 'tr') ? "dd MMMM yyyy DDDD" : "DDDD, MMMM dd, yyyy";
+    String dateFormat = (language == 'tr')
+        ? "dd MMMM yyyy DDDD"
+        : (language == 'ar')
+            ? "DDDD، dd MMMM yyyy"
+            : "DDDD, MMMM dd, yyyy";
 
     return format(hYear, hMonth, hDay, dateFormat);
   }

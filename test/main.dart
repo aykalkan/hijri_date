@@ -160,6 +160,14 @@ void main() {
     });
   });
 
+  group('arabic full date', () {
+    test('fullDate uses arabic order and comma', () {
+      HijriCalendar.setLocal('ar');
+      HijriCalendar cal = HijriCalendar.fromDate(DateTime(2018, 5, 27));
+      expect(cal.fullDate(), equals("الأحد، ١٢ رمضان ١٤٣٩"));
+    });
+  });
+
   group('compare dates', () {
     test('this date occurs before enterd date', () {
       expect(_hijriDate.isBefore(1439, 10, 12), equals(false));
