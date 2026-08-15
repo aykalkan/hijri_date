@@ -1,7 +1,5 @@
 library hijri;
 
-import 'dart:io';
-
 import 'digits_converter.dart';
 import 'hijri_date.dart';
 import 'hijri_array.dart';
