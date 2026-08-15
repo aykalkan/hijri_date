@@ -1,7 +1,9 @@
 library hijri;
 
-import 'package:hijri/digits_converter.dart';
+import 'dart:io';
 
+import 'digits_converter.dart';
+import 'hijri_date.dart';
 import 'hijri_array.dart';
 
 class HijriCalendar {
@@ -16,7 +18,7 @@ class HijriCalendar {
   late String dayWeName;
   Map<int, int>? adjustments;
 
-  static const Map<String, Map<String, Map<int, String>>> _local = {
+  static Map<String, Map<String, Map<int, String>>> _local = {
     'en': {
       'long': monthNames,
       'short': monthShortNames,
@@ -29,6 +31,12 @@ class HijriCalendar {
       'days': arWkNames,
       'short_days': arShortWdNames
     },
+    'tr': {
+      'long': trMonthNames,
+      'short': trMonthShortNames,
+      'days': trWdNames,
+      'short_days': trShortWdNames
+    },
   };
 
   // Consider switching to the factory pattern
@@ -40,7 +48,7 @@ class HijriCalendar {
   HijriCalendar();
 
   HijriCalendar.fromDate(DateTime date) {
-    gregorianToHijri(date.year, date.month, date.day);
+    gregorianToHijri(date);
   }
 
   HijriCalendar.now() {
@@ -53,9 +61,12 @@ class HijriCalendar {
     hDay = 1;
   }
 
+  HijriCalendar.addLocale(String locale, Map<String, Map<int, String>> names) {
+    _local[locale] = names;
+  }
+
   String _now() {
-    DateTime today = DateTime.now();
-    return gregorianToHijri(today.year, today.month, today.day);
+    return gregorianToHijri(DateTime.now());
   }
 
   int getDaysInMonth(int year, int month) {
@@ -113,78 +124,90 @@ class HijriCalendar {
     return DateTime(year, (month), day);
   }
 
-  String gregorianToHijri(int pYear, int pMonth, int pDay) {
-    //This code the modified version of R.H. van Gent Code, it can be found at http://www.staff.science.uu.nl/~gent0113/islam/ummalqura.htm
-    // read calendar data
+  String gregorianToHijri(DateTime date) {
+    DateTime truncDate = DateTime(date.year, date.month, date.day);
+    wkDay = truncDate.weekday;
 
-    int day = (pDay);
-    int month =
-        (pMonth); // -1; // Here we enter the Index of the month (which starts with Zero)
-    int year = (pYear);
+    HijriDate hijriDateObject =
+        hijriDatesCache.putIfAbsent(truncDate, () => fillCache(truncDate));
 
-    int m = month;
-    int y = year;
+    return hDate(
+        hijriDateObject.year, hijriDateObject.month, hijriDateObject.day);
+  }
 
-    // append January and February to the previous year (i.e. regard March as
-    // the first month of the year in order to simplify leapday corrections)
+  HijriDate fillCache(DateTime date) {
+    //print("!!! DATE IS ABSENT !!!");
+    //print("Date : ${date}");
 
-    if (m < 3) {
-      y -= 1;
-      m += 12;
+    DateTime minDate = parseDateFromInt(dateMap.keys.first);
+    DateTime maxDate = parseDateFromInt(dateMap.keys.last);
+    maxDate = DateTime(maxDate.year, maxDate.month, maxDate.day + 30);
+    if (date.isBefore(minDate) ||
+        date.isAfter(maxDate) ||
+        date.isAtSameMomentAs(maxDate)) {
+      throw new Exception(
+          "Selected date should between $minDate and $maxDate.");
     }
 
-    // determine offset between Julian and Gregorian calendar
-
-    int a = (y / 100).floor();
-    int jgc = a - (a / 4.0).floor() - 2;
-
-    // compute Chronological Julian Day Number (CJDN)
-
-    int cjdn = (365.25 * (y + 4716)).floor() +
-        (30.6001 * (m + 1)).floor() +
-        day -
-        jgc -
-        1524;
-
-    a = ((cjdn - 1867216.25) / 36524.25).floor();
-    jgc = a - (a / 4.0).floor() + 1;
-    int b = cjdn + jgc + 1524;
-    int c = ((b - 122.1) / 365.25).floor();
-    int d = (365.25 * c).floor();
-    month = ((b - d) / 30.6001).floor();
-    day = (b - d) - (30.6001 * month).floor();
-
-    if (month > 13) {
-      c += 1;
-      month -= 12;
+    if (hijriDatesCache.length > 180) {
+      for (int i = 0; i < hijriDatesCache.length - 180; i++) {
+        //print(
+        //    "Removing ${hijriDatesCache.keys.elementAt(i)} -> ${hijriDatesCache.values.elementAt(i)}");
+        hijriDatesCache.remove(hijriDatesCache.keys.elementAt(i));
+      }
     }
 
-    month -= 1;
-    year = c - 4716;
+    String dateString = (date.year.toString() +
+        date.month.toString().padLeft(2, '0') +
+        date.day.toString().padLeft(2, '0'));
+    int dateInt = int.parse(dateString);
 
-    // compute Modified Chronological Julian Day Number (MCJDN)
+    int i = dateMap.length - 1;
 
-    int mcjdn = cjdn - 2400000;
-
-    // the MCJDN's of the start of the lunations in the Umm al-Qura calendar are stored in 'islamcalendar_dat.js'
-    int i;
-    for (i = 0; i < ummAlquraDateArray.length; i++) {
-      if (_ummalquraDataIndex(i)! > mcjdn) break;
+    for (; i >= 0; i--) {
+      if (dateMap.keys.elementAt(i) <= dateInt) {
+        break;
+      }
     }
 
-    // compute and output the Umm al-Qura calendar date
+    DateTime monthStartDate = parseDateFromInt(dateMap.keys.elementAt(i));
+    DateTime monthEndDate;
+    try {
+      monthEndDate = parseDateFromInt(dateMap.keys.elementAt(i + 1));
+    } catch (e) {
+      monthEndDate = DateTime(maxDate.year, maxDate.month, maxDate.day);
+    }
+    HijriDate monthStartHijri = parseHijriFromInt(dateMap.values.elementAt(i));
 
-    int iln = i + 16260;
-    int ii = ((iln - 1) / 12).floor();
-    int iy = ii + 1;
-    int im = iln - 12 * ii;
-    int id = mcjdn - _ummalquraDataIndex(i - 1)! + 1;
-    int ml = _ummalquraDataIndex(i)! - _ummalquraDataIndex(i - 1)!;
-    lengthOfMonth = ml;
-    int wd = _gMod(cjdn + 1, 7);
+    for (DateTime calculatedDate = monthStartDate;
+        calculatedDate.isBefore(monthEndDate);
+        calculatedDate = DateTime(calculatedDate.year, calculatedDate.month,
+            calculatedDate.day + 1)) {
+      hijriDatesCache[calculatedDate] = HijriDate.fromMonthStart(calculatedDate,
+          monthStartDate, monthStartHijri.year, monthStartHijri.month);
+    }
 
-    wkDay = wd == 0 ? 7 : wd;
-    return hDate(iy, im, id);
+    //printCacheMap();
+
+    return hijriDatesCache[date]!;
+  }
+
+  DateTime parseDateFromInt(int dateInt) {
+    String dateString = dateInt.toString().padLeft(8, '0');
+    return DateTime(
+      int.parse(dateString.substring(0, 4)),
+      int.parse(dateString.substring(4, 6)),
+      int.parse(dateString.substring(6, 8)),
+    );
+  }
+
+  HijriDate parseHijriFromInt(int hijriInt) {
+    String hijriYearMonthString = hijriInt.toString().padLeft(6, '0');
+
+    int hijriMonth = int.parse(hijriYearMonthString.substring(4, 6));
+    int hijriYear = int.parse(hijriYearMonthString.substring(0, 4));
+
+    return HijriDate(hijriYear, hijriMonth, 1);
   }
 
   String hDate(int year, int month, int day) {
@@ -201,7 +224,7 @@ class HijriCalendar {
     return this.format(this.hYear, this.hMonth, this.hDay, format);
   }
 
-  String format(year, month, day, format) {
+  String format(year, month, day, String format) {
     String newFormat = format;
 
     String dayString;
@@ -218,49 +241,49 @@ class HijriCalendar {
       yearString = year.toString();
     }
 
-    if (newFormat.contains("dd")) {
+    if (format.contains("dd")) {
       newFormat = newFormat.replaceFirst("dd", dayString);
     } else {
-      if (newFormat.contains("d")) {
+      if (format.contains("d")) {
         newFormat = newFormat.replaceFirst("d", day.toString());
       }
     }
 
     //=========== Day Name =============//
     // Friday
-    if (newFormat.contains("DDDD")) {
+    if (format.contains("DDDD")) {
       newFormat = newFormat.replaceFirst(
           "DDDD", "${_local[language]!['days']![wkDay ?? weekDay()]}");
 
       // Fri
-    } else if (newFormat.contains("DD")) {
+    } else if (format.contains("DD")) {
       newFormat = newFormat.replaceFirst(
           "DD", "${_local[language]!['short_days']![wkDay ?? weekDay()]}");
     }
 
     //============== Month ========================//
     // 1
-    if (newFormat.contains("mm")) {
+    if (format.contains("mm")) {
       newFormat = newFormat.replaceFirst("mm", monthString);
-    } else {
+    } else if (format.contains("m")) {
       newFormat = newFormat.replaceFirst("m", monthString);
     }
 
     // Muharram
-    if (newFormat.contains("MMMM")) {
+    if (format.contains("MMMM")) {
       newFormat =
           newFormat.replaceFirst("MMMM", _local[language]!['long']![month]!);
     } else {
-      if (newFormat.contains("MM")) {
+      if (format.contains("MM")) {
         newFormat =
             newFormat.replaceFirst("MM", _local[language]!['short']![month]!);
       }
     }
 
     //================= Year ========================//
-    if (newFormat.contains("yyyy")) {
+    if (format.contains("yyyy")) {
       newFormat = newFormat.replaceFirst("yyyy", yearString);
-    } else {
+    } else if (format.contains("yy")) {
       newFormat = newFormat.replaceFirst("yy", yearString.substring(2, 4));
     }
     return newFormat;
@@ -305,8 +328,7 @@ class HijriCalendar {
 
   @override
   String toString() {
-    String dateFormat = "dd/mm/yyyy";
-    if (language == "ar") dateFormat = "yyyy/mm/dd";
+    String dateFormat = (language == "ar") ? "yyyy/mm/dd" : "dd/mm/yyyy";
 
     return format(hYear, hMonth, hDay, dateFormat);
   }
@@ -314,7 +336,10 @@ class HijriCalendar {
   List<int?> toList() => [hYear, hMonth, hDay];
 
   String fullDate() {
-    return format(hYear, hMonth, hDay, "DDDD, MMMM dd, yyyy");
+    String dateFormat =
+        (language == 'tr') ? "dd MMMM yyyy DDDD" : "DDDD, MMMM dd, yyyy";
+
+    return format(hYear, hMonth, hDay, dateFormat);
   }
 
   bool isValid() {
@@ -346,5 +371,30 @@ class HijriCalendar {
 
   String getDayName() {
     return _local[language]!['days']![wkDay]!;
+  }
+
+  // to get all month names in long format
+  Map<int, String> getMonths() {
+    return _local[language]!['long']!;
+  }
+
+  // to get specific month days on map of date and day name
+  Map<int, String> getMonthDays(int month, int year) {
+    Map<int, String> calender = {};
+    int d = hijriToGregorian(year, month, 1).weekday;
+    int daysInMonth = getDaysInMonth(year, month);
+    for (int i = 1; i <= daysInMonth; i++) {
+      calender.putIfAbsent(i, () => _local[language]!['days']![d]!);
+      d = d < 7 ? d + 1 : 1;
+    }
+    return calender;
+  }
+
+  void printCacheMap() {
+    print("-------------hijriDatesCache----------------");
+    hijriDatesCache.forEach((key, value) {
+      print("${key} -> ${value.year}-${value.month}-${value.day}");
+    });
+    print("++++++++++++++++hijriDatesCache++++++++++++++++");
   }
 }
