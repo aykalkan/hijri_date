@@ -92,15 +92,79 @@ void main() {
         5: "Jum",
         6: "Sab"
       };
-      HijriCalendar.addLocale('id', {
+      HijriCalendar.addLocale('jv', {
         'long': monthNames,
         'short': monthShortNames,
         'days': wdNames,
         'short_days': shortWdNames
       });
-      HijriCalendar.setLocal('id');
+      HijriCalendar.setLocal('jv');
       expect(
           _hijriDate.toFormat("DDDD MM yyyy dd"), equals("Sabtu Syaw 1439 30"));
+    });
+  });
+
+  group('locale fallback', () {
+    HijriCalendar _fallbackCal = HijriCalendar.fromDate(DateTime(2018, 5, 27));
+
+    test('unknown locale falls back to en', () {
+      HijriCalendar.setLocal('zz');
+      expect(_fallbackCal.toFormat("MMMM"), equals("Ramadan"));
+      expect(() => _fallbackCal.fullDate(), returnsNormally);
+    });
+  });
+
+  group('locale tables', () {
+    // 2018-05-27 -> 1439/9/12, weekday = Sunday (7)
+    final Map<String, String> expectedLongMonth = {
+      'ur': 'رمضان',
+      'ms': 'Ramadan',
+      'id': 'Ramadan',
+      'fr': 'ramadan',
+      'de': 'Ramadan',
+      'es': 'ramadan',
+    };
+    final Map<String, String> expectedShortDay = {
+      'ur': 'اتوار',
+      'ms': 'Aha',
+      'id': 'Min',
+      'fr': 'dim',
+      'de': 'So',
+      'es': 'dom',
+    };
+
+    expectedLongMonth.forEach((locale, month) {
+      test('$locale long month name', () {
+        HijriCalendar.setLocal(locale);
+        expect(HijriCalendar.fromDate(DateTime(2018, 5, 27)).toFormat("MMMM"),
+            equals(month));
+      });
+    });
+
+    expectedShortDay.forEach((locale, day) {
+      test('$locale short day name', () {
+        HijriCalendar.setLocal(locale);
+        expect(HijriCalendar.fromDate(DateTime(2018, 5, 27)).toFormat("DD"),
+            equals(day));
+      });
+    });
+  });
+
+  group('urdu digits', () {
+    test('format uses urdu numerals', () {
+      HijriCalendar.setLocal('ur');
+      HijriCalendar cal = HijriCalendar.fromDate(DateTime(2018, 5, 27));
+      expect(cal.toFormat("dd mm yyyy"), equals("۱۲ ۹ ۱۴۳۹"));
+      expect(cal.toFormat("dd"), equals("۱۲"));
+      expect(cal.toFormat("yyyy"), equals("۱۴۳۹"));
+    });
+  });
+
+  group('arabic full date', () {
+    test('fullDate uses arabic order and comma', () {
+      HijriCalendar.setLocal('ar');
+      HijriCalendar cal = HijriCalendar.fromDate(DateTime(2018, 5, 27));
+      expect(cal.fullDate(), equals("الأحد، ١٢ رمضان ١٤٣٩"));
     });
   });
 
@@ -141,6 +205,7 @@ void main() {
   group('return Map of months values', () {
     HijriCalendar _calender = HijriCalendar();
     test('get all months', () {
+      HijriCalendar.setLocal('en');
       const Map<int, String> monthNames = {
         1: 'Muharram',
         2: 'Safar',

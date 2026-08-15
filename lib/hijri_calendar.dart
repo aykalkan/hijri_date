@@ -35,11 +35,47 @@ class HijriCalendar {
       'days': trWdNames,
       'short_days': trShortWdNames
     },
+    'ur': {
+      'long': urMonthNames,
+      'short': urMonthShortNames,
+      'days': urWdNames,
+      'short_days': urShortWdNames
+    },
+    'ms': {
+      'long': msMonthNames,
+      'short': msMonthShortNames,
+      'days': msWdNames,
+      'short_days': msShortWdNames
+    },
+    'id': {
+      'long': idMonthNames,
+      'short': idMonthShortNames,
+      'days': idWdNames,
+      'short_days': idShortWdNames
+    },
+    'fr': {
+      'long': frMonthNames,
+      'short': frMonthShortNames,
+      'days': frWdNames,
+      'short_days': frShortWdNames
+    },
+    'de': {
+      'long': deMonthNames,
+      'short': deMonthShortNames,
+      'days': deWdNames,
+      'short_days': deShortWdNames
+    },
+    'es': {
+      'long': esMonthNames,
+      'short': esMonthShortNames,
+      'days': esWdNames,
+      'short_days': esShortWdNames
+    },
   };
 
   // Consider switching to the factory pattern
   factory HijriCalendar.setLocal(String locale) {
-    language = locale;
+    language = _local.containsKey(locale) ? locale : 'en';
     return HijriCalendar();
   }
 
@@ -233,6 +269,10 @@ class HijriCalendar {
       dayString = DigitsConverter.convertWesternNumberToEastern(day);
       monthString = DigitsConverter.convertWesternNumberToEastern(month);
       yearString = DigitsConverter.convertWesternNumberToEastern(year);
+    } else if (language == 'ur') {
+      dayString = DigitsConverter.convertWesternNumberToUrdu(day);
+      monthString = DigitsConverter.convertWesternNumberToUrdu(month);
+      yearString = DigitsConverter.convertWesternNumberToUrdu(year);
     } else {
       dayString = day.toString();
       monthString = month.toString();
@@ -334,8 +374,11 @@ class HijriCalendar {
   List<int?> toList() => [hYear, hMonth, hDay];
 
   String fullDate() {
-    String dateFormat =
-        (language == 'tr') ? "dd MMMM yyyy DDDD" : "DDDD, MMMM dd, yyyy";
+    String dateFormat = (language == 'tr')
+        ? "dd MMMM yyyy DDDD"
+        : (language == 'ar')
+            ? "DDDD، dd MMMM yyyy"
+            : "DDDD, MMMM dd, yyyy";
 
     return format(hYear, hMonth, hDay, dateFormat);
   }
