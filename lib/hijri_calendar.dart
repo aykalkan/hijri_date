@@ -269,6 +269,10 @@ class HijriCalendar {
       dayString = DigitsConverter.convertWesternNumberToEastern(day);
       monthString = DigitsConverter.convertWesternNumberToEastern(month);
       yearString = DigitsConverter.convertWesternNumberToEastern(year);
+    } else if (language == 'ur') {
+      dayString = DigitsConverter.convertWesternNumberToUrdu(day);
+      monthString = DigitsConverter.convertWesternNumberToUrdu(month);
+      yearString = DigitsConverter.convertWesternNumberToUrdu(year);
     } else {
       dayString = day.toString();
       monthString = month.toString();

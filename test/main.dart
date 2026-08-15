@@ -150,6 +150,16 @@ void main() {
     });
   });
 
+  group('urdu digits', () {
+    test('format uses urdu numerals', () {
+      HijriCalendar.setLocal('ur');
+      HijriCalendar cal = HijriCalendar.fromDate(DateTime(2018, 5, 27));
+      expect(cal.toFormat("dd mm yyyy"), equals("۱۲ ۹ ۱۴۳۹"));
+      expect(cal.toFormat("dd"), equals("۱۲"));
+      expect(cal.toFormat("yyyy"), equals("۱۴۳۹"));
+    });
+  });
+
   group('compare dates', () {
     test('this date occurs before enterd date', () {
       expect(_hijriDate.isBefore(1439, 10, 12), equals(false));
