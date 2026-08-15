@@ -35,6 +35,42 @@ class HijriCalendar {
       'days': trWdNames,
       'short_days': trShortWdNames
     },
+    'ur': {
+      'long': urMonthNames,
+      'short': urMonthShortNames,
+      'days': urWdNames,
+      'short_days': urShortWdNames
+    },
+    'ms': {
+      'long': msMonthNames,
+      'short': msMonthShortNames,
+      'days': msWdNames,
+      'short_days': msShortWdNames
+    },
+    'id': {
+      'long': idMonthNames,
+      'short': idMonthShortNames,
+      'days': idWdNames,
+      'short_days': idShortWdNames
+    },
+    'fr': {
+      'long': frMonthNames,
+      'short': frMonthShortNames,
+      'days': frWdNames,
+      'short_days': frShortWdNames
+    },
+    'de': {
+      'long': deMonthNames,
+      'short': deMonthShortNames,
+      'days': deWdNames,
+      'short_days': deShortWdNames
+    },
+    'es': {
+      'long': esMonthNames,
+      'short': esMonthShortNames,
+      'days': esWdNames,
+      'short_days': esShortWdNames
+    },
   };
 
   // Consider switching to the factory pattern
