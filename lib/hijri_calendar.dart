@@ -39,7 +39,7 @@ class HijriCalendar {
 
   // Consider switching to the factory pattern
   factory HijriCalendar.setLocal(String locale) {
-    language = locale;
+    language = _local.containsKey(locale) ? locale : 'en';
     return HijriCalendar();
   }
 

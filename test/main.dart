@@ -104,6 +104,21 @@ void main() {
     });
   });
 
+  group('locale fallback', () {
+    HijriCalendar _fallbackCal = HijriCalendar.fromDate(DateTime(2018, 5, 27));
+
+    test('unknown locale falls back to en', () {
+      HijriCalendar.setLocal('zz');
+      expect(_fallbackCal.toFormat("MMMM"), equals("Ramadan"));
+      expect(() => _fallbackCal.fullDate(), returnsNormally);
+    });
+
+    test('unsupported app locale falls back to en', () {
+      HijriCalendar.setLocal('ur');
+      expect(_fallbackCal.toFormat("DDDD"), equals("Sunday"));
+    });
+  });
+
   group('compare dates', () {
     test('this date occurs before enterd date', () {
       expect(_hijriDate.isBefore(1439, 10, 12), equals(false));
