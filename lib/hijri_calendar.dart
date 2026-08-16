@@ -71,6 +71,12 @@ class HijriCalendar {
       'days': esWdNames,
       'short_days': esShortWdNames
     },
+    'ru': {
+      'long': ruMonthNames,
+      'short': ruMonthShortNames,
+      'days': ruWdNames,
+      'short_days': ruShortWdNames
+    },
   };
 
   // Consider switching to the factory pattern

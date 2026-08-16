@@ -123,6 +123,7 @@ void main() {
       'fr': 'ramadan',
       'de': 'Ramadan',
       'es': 'ramadan',
+      'ru': 'рамадан',
     };
     final Map<String, String> expectedShortDay = {
       'ur': 'اتوار',
@@ -131,6 +132,7 @@ void main() {
       'fr': 'dim',
       'de': 'So',
       'es': 'dom',
+      'ru': 'вс',
     };
 
     expectedLongMonth.forEach((locale, month) {
