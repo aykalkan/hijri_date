@@ -109,7 +109,57 @@ class HijriCalendar {
     return gregorianToHijri(DateTime.now());
   }
 
+  // dateMap (Diyanet/Turkiye verisi) tek dogruluk kaynagidir. Ay uzunlugu iki
+  // ardisik ay baslangicinin farki olarak turetilir; boylece ay uzunlugu,
+  // hijriToGregorian ve gregorianToHijri (fromDate) birbiriyle tutarli kalir.
+  static Map<int, DateTime>? _monthStartIndex;
+
+  static DateTime _dateFromInt(int dateInt) {
+    String s = dateInt.toString().padLeft(8, '0');
+    return DateTime(
+      int.parse(s.substring(0, 4)),
+      int.parse(s.substring(4, 6)),
+      int.parse(s.substring(6, 8)),
+    );
+  }
+
+  // dateMap'ten "toplam ay" ((yil-1)*12 + ay) -> ay baslangici indeksini kurar
+  static void _ensureMonthStartIndex() {
+    if (_monthStartIndex != null) return;
+    Map<int, DateTime> index = <int, DateTime>{};
+    dateMap.forEach((int gregorian, int hijri) {
+      int year = hijri ~/ 100;
+      int month = hijri % 100;
+      int key = (year - 1) * 12 + month;
+      DateTime start = _dateFromInt(gregorian);
+      DateTime? current = index[key];
+      if (current == null || start.isBefore(current)) {
+        index[key] = start;
+      }
+    });
+    _monthStartIndex = index;
+  }
+
+  DateTime? _monthStart(int year, int month) {
+    _ensureMonthStartIndex();
+    return _monthStartIndex![(year - 1) * 12 + month];
+  }
+
+  // Yaz saati uygulamasi (DST) kaynakli kaymalari onlemek icin UTC uzerinden
+  static int _daysBetween(DateTime from, DateTime to) {
+    DateTime a = DateTime.utc(from.year, from.month, from.day);
+    DateTime b = DateTime.utc(to.year, to.month, to.day);
+    return b.difference(a).inDays;
+  }
+
   int getDaysInMonth(int year, int month) {
+    DateTime? start = _monthStart(year, month);
+    DateTime? nextStart =
+        month == 12 ? _monthStart(year + 1, 1) : _monthStart(year, month + 1);
+    if (start != null && nextStart != null) {
+      return _daysBetween(start, nextStart);
+    }
+    // dateMap kapsami (1318-01..1457-11) disinda eski Umm al-Qura tablosu
     int i = _getNewMoonMJDNIndex(year, month);
     return _ummalquraDataIndex(i)! - _ummalquraDataIndex(i - 1)!;
   }
@@ -127,13 +177,21 @@ class HijriCalendar {
   int lengthOfYear({int? year = 0}) {
     int total = 0;
     if (year == 0) year = this.hYear;
-    for (int m = 0; m <= 11; m++) {
+    for (int m = 1; m <= 12; m++) {
       total += getDaysInMonth(year!, m);
     }
     return total;
   }
 
   DateTime hijriToGregorian(year, month, day) {
+    DateTime? start = _monthStart(year, month);
+    if (start != null) {
+      // dateMap ay baslangici + (gun - 1); UTC uzerinden DST kaymasi onlenir
+      DateTime utcStart = DateTime.utc(start.year, start.month, start.day);
+      DateTime result = utcStart.add(Duration(days: day - 1));
+      return DateTime(result.year, result.month, result.day);
+    }
+    // dateMap kapsami disinda eski Umm al-Qura hesabi
     int iy = year;
     int im = month;
     int id = day;
@@ -253,6 +311,7 @@ class HijriCalendar {
   String hDate(int year, int month, int day) {
     this.hYear = year;
     this.hMonth = month;
+    this.lengthOfMonth = getDaysInMonth(year, month);
     this.longMonthName = _local[language]!['long']![month]!;
     this.dayWeName = _local[language]!['days']![wkDay]!;
     this.shortMonthName = _local[language]!['short']![month]!;

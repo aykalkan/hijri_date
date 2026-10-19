@@ -27,7 +27,8 @@ void main() {
     });
 
     test('days in year', () {
-      expect(_hijriDate.lengthOfYear(year: 1440), equals(355));
+      // dateMap (Diyanet) verisine gore 1440 AH = 354 gun
+      expect(_hijriDate.lengthOfYear(year: 1440), equals(354));
     });
 
     test('days in month', () {
